@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import { useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { Link, Outlet, useLocation, useNavigate, useParams } from 'react-router-dom';
 import { asyncloadmovie, removemovie } from '../store/actions/movieActions';
@@ -18,10 +18,12 @@ const MovieDetails = () => {
     return () => dispatch(removemovie());
   }, [id, dispatch]);
 
+  const year = info?.detail?.release_date?.split('-')[0];
+
   return info ? (
     <div
       style={{
-        backgroundImage: `linear-gradient(rgba(0,0,0,.2),rgba(0,0,0,.5), rgba(0,0,0,.8)),
+        backgroundImage: `linear-gradient(90deg,rgba(13,15,20,.98),rgba(13,15,20,.84),rgba(13,15,20,.58)),
               url(https://image.tmdb.org/t/p/original/${
                 info.detail.backdrop_path || info.detail.poster_path
               })`,
@@ -29,67 +31,73 @@ const MovieDetails = () => {
         backgroundSize: 'cover',
         backgroundRepeat: 'no-repeat',
       }}
-      className="relative w-screen min-h-screen px-4 sm:px-[10%]"
+      className="relative min-h-screen w-screen bg-[#0D0F14] px-4 pb-10 text-white sm:px-8 lg:px-10"
     >
-      {/* Navigation */}
-      <nav className="h-[10vh] w-full text-[#fff7ed] flex items-center gap-4 sm:gap-10 text-lg sm:text-xl">
-        <Link title="Previous page" onClick={() => navigate(-1)} className="ri-arrow-left-line hover:text-[#F56009] cursor-pointer"></Link>
-        <a title="Wikipedia link" target="_blank" rel="noopener noreferrer" href={`https://wikidata.org/wiki/${info.externalid.wikidata_id}`}>
-          <i className="ri-earth-fill hover:text-[#F56009]"></i>
-        </a>
-        <a title="Official Website" target="_blank" rel="noopener noreferrer" href={info.detail.homepage}>
-          <i className="ri-external-link-fill hover:text-[#F56009]"></i>
-        </a>
-        <a title="IMDb link" target="_blank" rel="noopener noreferrer" href={`https://www.imdb.com/title/${info.externalid.imdb_id}/`}>
-          <i className="ri-database-2-fill hover:text-[#F56009]"></i>
-        </a>
+      <nav className="flex min-h-20 w-full items-center gap-3 py-5 text-xl text-white">
+        <button title="Previous page" onClick={() => navigate(-1)} className="grid h-11 w-11 place-items-center rounded-full border border-white/10 bg-white/[0.08] duration-300 hover:border-[#F56009]/50 hover:text-[#F56009]">
+          <i className="ri-arrow-left-line"></i>
+        </button>
+        {info.externalid.wikidata_id && (
+          <a className="grid h-11 w-11 place-items-center rounded-full border border-white/10 bg-white/[0.08] duration-300 hover:border-[#F56009]/50 hover:text-[#F56009]" title="Wikipedia link" target="_blank" rel="noopener noreferrer" href={`https://wikidata.org/wiki/${info.externalid.wikidata_id}`}>
+            <i className="ri-earth-fill"></i>
+          </a>
+        )}
+        {info.detail.homepage && (
+          <a className="grid h-11 w-11 place-items-center rounded-full border border-white/10 bg-white/[0.08] duration-300 hover:border-[#F56009]/50 hover:text-[#F56009]" title="Official Website" target="_blank" rel="noopener noreferrer" href={info.detail.homepage}>
+            <i className="ri-external-link-fill"></i>
+          </a>
+        )}
+        {info.externalid.imdb_id && (
+          <a className="grid h-11 w-11 place-items-center rounded-full border border-white/10 bg-white/[0.08] duration-300 hover:border-[#F56009]/50 hover:text-[#F56009]" title="IMDb link" target="_blank" rel="noopener noreferrer" href={`https://www.imdb.com/title/${info.externalid.imdb_id}/`}>
+            <i className="ri-database-2-fill"></i>
+          </a>
+        )}
       </nav>
 
-      {/* Movie Details */}
-      <div className="flex flex-col sm:flex-row text-white mt-8">
-        <img className="h-auto sm:h-[50vh] object-cover rounded-lg" src={`https://image.tmdb.org/t/p/original/${info.detail.poster_path || info.detail.backdrop_path}`} alt="Movie Poster" />
+      <section className="flex flex-col gap-8 lg:flex-row">
+        <img className="w-full max-w-sm rounded-3xl border border-white/10 object-cover shadow-2xl shadow-black/40 lg:w-[22rem]" src={`https://image.tmdb.org/t/p/original/${info.detail.poster_path || info.detail.backdrop_path}`} alt="Movie Poster" />
 
-        <div className="content mt-6 sm:mt-0 sm:ml-8">
-          <h1 className="text-3xl sm:text-5xl font-black">
+        <div className="max-w-5xl">
+          <p className="mb-3 text-xs font-bold uppercase tracking-[0.28em] text-[#F56009]">Movie details</p>
+          <h1 className="text-4xl font-black leading-tight sm:text-6xl">
             {info.detail.name || info.detail.title || info.detail.original_title || info.detail.original_name}
-            <small className="text-lg sm:text-2xl font-bold text-zinc-200"> ({info.detail.release_date.split('-')[0]})</small>
+            {year && <small className="ml-2 text-2xl font-bold text-zinc-300">({year})</small>}
           </h1>
 
-          <div className="mt-3 mb-5 flex flex-wrap items-center gap-4">
-            <span className="text-white rounded-full text-xl font-semibold bg-[#fe9739] w-[5vh] h-[5vh] flex justify-center items-center">
+          <div className="mb-6 mt-5 flex flex-wrap items-center gap-3">
+            <span className="grid h-14 w-14 place-items-center rounded-full bg-[#F56009] text-lg font-black text-white shadow-lg shadow-[#F56009]/25">
               {(info.detail.vote_average * 10).toFixed()}%
             </span>
-            <h1 className="font-semibold text-lg sm:text-2xl">User Score</h1>
-            <h1>{info.detail.release_date}</h1>
-            <h1>{info.detail.genres.map((g) => g.name).join(', ')}</h1>
-            <h1>{info.detail.runtime} min</h1>
+            <span className="rounded-full bg-white/10 px-4 py-2 font-semibold">User Score</span>
+            {info.detail.release_date && <span className="rounded-full bg-white/10 px-4 py-2">{info.detail.release_date}</span>}
+            <span className="rounded-full bg-white/10 px-4 py-2">{info.detail.genres.map((g) => g.name).join(', ')}</span>
+            {info.detail.runtime && <span className="rounded-full bg-white/10 px-4 py-2">{info.detail.runtime} min</span>}
           </div>
 
-          <h1 className="text-lg sm:text-xl font-semibold italic text-zinc-200">{info.detail.tagline}</h1>
+          {info.detail.tagline && <h1 className="text-lg font-semibold italic text-zinc-200 sm:text-xl">{info.detail.tagline}</h1>}
 
-          <h1 className="text-xl sm:text-2xl mt-5 font-semibold">Overview:</h1>
-          <p>{info.detail.overview}</p>
+          <h1 className="mt-6 text-2xl font-bold">Overview</h1>
+          <p className="mt-2 max-w-4xl leading-7 text-zinc-300">{info.detail.overview}</p>
 
-          <h1 className="text-xl sm:text-2xl mt-5 font-semibold">Languages:</h1>
-          <p className="mb-10">{info.translations.join(', ')}</p>
+          <h1 className="mt-6 text-2xl font-bold">Languages</h1>
+          <p className="mt-2 mb-8 max-w-4xl leading-7 text-zinc-300">{info.translations.join(', ')}</p>
 
-          <Link className="p-4 sm:p-5 bg-[#F56009] rounded-full" to={`${pathname}/trailer`}>
+          <Link className="inline-flex items-center rounded-full bg-[#F56009] px-6 py-3 font-bold shadow-lg shadow-[#F56009]/25 duration-300 hover:bg-[#ff751f]" to={`${pathname}/trailer`}>
             <i className="ri-play-fill text-xl mr-2"></i>Watch Trailer
           </Link>
         </div>
-      </div>
+      </section>
 
-      {/* Watch Providers */}
-      <div className="w-full sm:w-[80%] flex flex-col gap-5 mt-10">
+      <div className="mt-10 flex w-full flex-col gap-4 rounded-3xl border border-white/10 bg-white/[0.05] p-5 backdrop-blur">
         {['flatrate', 'rent', 'buy'].map((type) => (
           info.watchproviders && info.watchproviders[type] && (
-            <div key={type} className="flex flex-wrap items-center text-white gap-4">
-              <h1>Available {type === 'flatrate' ? 'on Platforms' : type === 'rent' ? 'for Rent' : 'to Buy'}</h1>
+            <div key={type} className="flex flex-wrap items-center gap-4 text-white">
+              <h1 className="min-w-44 font-bold">Available {type === 'flatrate' ? 'on Platforms' : type === 'rent' ? 'for Rent' : 'to Buy'}</h1>
               {info.watchproviders[type].map((w, i) => (
                 <img
                   key={i}
                   title={w.provider_name}
-                  className="w-[5vh] h-[5vh] object-cover rounded-md"
+                  className="h-12 w-12 rounded-xl object-cover shadow-lg"
                   src={`https://image.tmdb.org/t/p/original/${w.logo_path}`}
                   alt={w.provider_name}
                 />
@@ -100,8 +108,8 @@ const MovieDetails = () => {
       </div>
 
       {/* Recommendations */}
-      <hr className="mt-10 mb-5 border-none h-[2px] bg-zinc-500" />
-      <h1 className="text-2xl sm:text-3xl font-bold text-white">Movie Recommendations & Similar Movies</h1>
+      <div className="mt-10 mb-5 h-px bg-white/10" />
+      <h1 className="text-2xl font-bold text-white sm:text-3xl">Movie Recommendations & Similar Movies</h1>
       <HorizontalCards data={info.recommendations.length > 0 ? info.recommendations : info.similar} />
       <Outlet />
     </div>

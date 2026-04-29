@@ -17,7 +17,7 @@ const Home = () => {
   const GetHeaderWallpaper = async () => {
     try {
       const { data } = await axios.get(`/trending/all/week`);
-      let randomdata = data.results[(Math.random() * data.results.length).toFixed()];
+      let randomdata = data.results[Math.floor(Math.random() * data.results.length)];
       setwallpaper(randomdata);
     } catch (error) {
       console.log("Error: ", error);
@@ -39,20 +39,32 @@ const Home = () => {
   }, [category]);
 
   return wallpaper && trending ? (
-    <div className="flex flex-col lg:flex-row h-screen w-screen overflow-hidden bg-[#1F1E24]">
+    <div className="flex h-screen w-screen flex-col overflow-hidden bg-[#0D0F14] text-white lg:flex-row">
       <Sidenav />
-      <div className="flex-1 w-full h-full overflow-y-auto overflow-x-hidden">
+      <main className="relative h-full w-full flex-1 overflow-y-auto overflow-x-hidden">
+        <div className="pointer-events-none fixed inset-0 bg-[radial-gradient(circle_at_top_right,rgba(245,96,9,0.16),transparent_34%),linear-gradient(135deg,rgba(255,255,255,0.04),transparent_45%)]" />
+        <div className="relative">
         <Topnav />
         <Header data={wallpaper} />
 
-        <div className="flex flex-col sm:flex-row justify-between p-5">
-          <h1 className="text-2xl sm:text-3xl font-semibold text-zinc-400">Trending:</h1>
+        <section className="px-4 pb-8 pt-6 sm:px-8 lg:px-10">
+          <div className="mb-5 flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
+            <div>
+              <p className="text-xs font-semibold uppercase tracking-[0.28em] text-[#F56009]">
+                This week
+              </p>
+              <h1 className="mt-2 text-2xl font-bold text-white sm:text-3xl">
+                Trending picks
+              </h1>
+            </div>
 
-          <Dropdown title="Filter" options={["tv", "movie", "all"]} func={(e) => setcategory(e.target.value)} />
+            <Dropdown title="Filter" options={["tv", "movie", "all"]} func={(e) => setcategory(e.target.value)} />
+          </div>
+
+          <HorizontalCards data={trending} />
+        </section>
         </div>
-
-        <HorizontalCards data={trending} />
-      </div>
+      </main>
     </div>
   ) : (
     <Loading />

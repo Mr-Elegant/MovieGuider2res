@@ -39,27 +39,29 @@ const People = () => {
   }, []);
 
   return person.length > 0 ? (
-    <div className="w-screen min-h-screen bg-[#1F1E24] flex flex-col">
-      <div className="px-4 sm:px-[5%] w-full flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
-        <h1 className="text-xl sm:text-2xl text-white font-semibold hover:text-[#ffeed4] flex items-center">
-          <i
-            onClick={() => navigate(-1)}
-            className="ri-arrow-left-line cursor-pointer text-[#fff7ed] hover:text-[#F56009] mr-2"
-          ></i>
-          <i
-            title="HomePage"
-            onClick={() => navigate('/')}
-            className="p-2 ri-home-3-fill cursor-pointer text-[#fff7ed] mr-2 hover:text-[#F56009] ml-2"
-          ></i>
-          Popular Actors:
-        </h1>
+    <div className="min-h-screen w-screen bg-[#0D0F14] text-white">
+      <div className="pointer-events-none fixed inset-0 bg-[radial-gradient(circle_at_top_right,rgba(245,96,9,0.14),transparent_35%)]" />
+      <div className="relative flex min-h-screen flex-col">
+      <div className="px-4 py-5 sm:px-8 lg:px-10">
+        <div className="mb-5 flex items-center gap-3 text-white">
+          <button title="Previous Page" onClick={() => navigate(-1)} className="grid h-11 w-11 place-items-center rounded-full border border-white/10 bg-white/[0.06] text-xl duration-300 hover:border-[#F56009]/50 hover:text-[#F56009]">
+            <i className="ri-arrow-left-line"></i>
+          </button>
+          <button title="HomePage" onClick={() => navigate('/')} className="grid h-11 w-11 place-items-center rounded-full border border-white/10 bg-white/[0.06] text-xl duration-300 hover:border-[#F56009]/50 hover:text-[#F56009]">
+            <i className="ri-home-3-fill"></i>
+          </button>
+          <div>
+            <p className="text-xs font-bold uppercase tracking-[0.24em] text-[#F56009]">People</p>
+            <h1 className="text-2xl font-black sm:text-4xl">Popular Actors</h1>
+          </div>
+        </div>
 
-        <div className="flex flex-col sm:flex-row items-center gap-4 w-full sm:w-auto justify-center">
+        <div className="rounded-3xl border border-white/10 bg-white/[0.04] p-3 shadow-2xl shadow-black/20">
           <Topnav />
         </div>
       </div>
 
-      <div id="scrollableDiv" className="flex-1 overflow-y-auto mt-4">
+      <div id="scrollableDiv" className="flex-1 overflow-y-auto">
         <InfiniteScroll
           dataLength={person.length}
           next={GetPerson}
@@ -68,6 +70,7 @@ const People = () => {
         >
           <Cards data={person} title="person" />
         </InfiniteScroll>
+      </div>
       </div>
     </div>
   ) : (

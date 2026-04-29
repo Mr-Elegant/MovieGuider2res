@@ -1,13 +1,12 @@
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { Link, useLocation, useNavigate, useParams } from 'react-router-dom';
+import { Link, useNavigate, useParams } from 'react-router-dom';
 import { asyncloadperson, removeperson } from '../store/actions/personActions';
 import Loading from './partials/Loading';
 import HorizontalCards from './partials/HorizontalCards';
 import Dropdown from './partials/Dropdown';
 
 const PersonDetails = () => {
-  const { pathname } = useLocation();
   const navigate = useNavigate();
   const { id } = useParams();
   const { info } = useSelector((state) => state.person);
@@ -24,108 +23,115 @@ const PersonDetails = () => {
   }, [id, dispatch]);
 
   return info ? (
-    <div className="px-4 sm:px-[10%] w-screen min-h-screen bg-[#000000]">
-      {/* Navigation */}
-      <nav className="h-[10vh] w-full text-[#fff7ed] flex items-center gap-4 sm:gap-10 text-lg sm:text-xl">
-        <Link
-          title="Previous page"
-          onClick={() => navigate(-1)}
-          className="ri-arrow-left-line hover:text-[#F56009] cursor-pointer"
-        ></Link>
-      </nav>
+    <div className="min-h-screen w-screen bg-[#0D0F14] px-4 pb-10 text-white sm:px-8 lg:px-10">
+      <div className="pointer-events-none fixed inset-0 bg-[radial-gradient(circle_at_top_right,rgba(245,96,9,0.12),transparent_34%)]" />
+      <div className="relative">
+        <nav className="flex min-h-20 w-full items-center gap-3 py-5 text-xl text-white">
+          <button
+            title="Previous page"
+            onClick={() => navigate(-1)}
+            className="grid h-11 w-11 place-items-center rounded-full border border-white/10 bg-white/[0.08] duration-300 hover:border-[#F56009]/50 hover:text-[#F56009]"
+          >
+            <i className="ri-arrow-left-line"></i>
+          </button>
+        </nav>
 
-      <div className="w-full flex flex-col sm:flex-row">
-        {/* Left - Poster and Personal Info */}
-        <div className="w-full sm:w-[30%]">
-          <img
-            className="h-auto sm:h-[35vh] object-cover rounded-lg"
-            src={`https://image.tmdb.org/t/p/original/${
-              info.detail.profile_path || info.detail.backdrop_path
-            }`}
-            alt={info.detail.name}
-          />
-
-          <hr className="mt-10 mb-5 border-none h-[2px] bg-zinc-500" />
-
-          <div className="text-2xl text-white flex gap-x-5">
-            {[
-              {
-                title: 'Wikipedia Profile',
-                href: `https://wikidata.org/wiki/${info.externalid.wikidata_id}`,
-                icon: 'ri-earth-fill',
-              },
-              {
-                title: 'Facebook Profile',
-                href: `https://facebook.com/${info.externalid.facebook_id}`,
-                icon: 'ri-facebook-circle-fill',
-              },
-              {
-                title: 'Instagram Profile',
-                href: `https://instagram.com/${info.externalid.instagram_id}`,
-                icon: 'ri-instagram-fill',
-              },
-              {
-                title: 'X (Twitter) Profile',
-                href: `https://x.com/${info.externalid.twitter_id}`,
-                icon: 'ri-twitter-x-line',
-              },
-            ].map((item, index) => (
-              <a key={index} title={item.title} target="_blank" rel="noopener noreferrer" href={item.href}>
-                <i className={`${item.icon} hover:text-[#F56009]`}></i>
-              </a>
-            ))}
-          </div>
-
-          <h1 className="text-2xl text-white font-semibold my-5">Personal Info:</h1>
-          {[
-            { label: 'Work', value: info.detail.known_for_department },
-            { label: 'Gender', value: info.detail.gender === 2 ? 'Male' : 'Female' },
-            { label: 'Born & Place', value: `${info.detail.birthday}, ${info.detail.place_of_birth}` },
-            {
-              label: 'Death-day',
-              value: info.detail.deathday || 'Alive and Kickin😎',
-            },
-            { label: 'AKA', value: info.detail.also_known_as.join(', ') },
-          ].map((item, index) => (
-            <div key={index} className="text-lg flex items-center gap-2">
-              <h1 className="text-white font-semibold">{item.label}:</h1>
-              <h1 className="text-zinc-400">{item.value}</h1>
-            </div>
-          ))}
-        </div>
-
-        {/* Right - Details and Information */}
-        <div className="w-full sm:w-[70%] sm:ml-[5%] mt-8 sm:mt-0">
-          <h1 className="text-3xl sm:text-5xl text-white font-black mb-5">{info.detail.name}</h1>
-
-          <h1 className="text-xl text-zinc-300 font-semibold">Biography:</h1>
-          <p className="text-zinc-400 mt-3">{info.detail.biography}</p>
-
-          <HorizontalCards data={info.combinedCredits.cast} />
-
-          <div className="w-full flex justify-between items-center mt-5">
-            <h1 className="text-xl text-zinc-400 font-semibold">Movies List:</h1>
-            <Dropdown
-              title="Category"
-              options={['tv', 'movie']}
-              func={(e) => setcategory(e.target.value)}
+        <section className="flex w-full flex-col gap-8 lg:flex-row">
+          <aside className="w-full lg:w-[30%]">
+            <img
+              className="w-full max-w-sm rounded-3xl border border-white/10 object-cover shadow-2xl shadow-black/40"
+              src={`https://image.tmdb.org/t/p/original/${
+                info.detail.profile_path || info.detail.backdrop_path
+              }`}
+              alt={info.detail.name}
             />
-          </div>
 
-          <div className="list-disc text-zinc-400 w-full h-[50vh] mt-5 overflow-x-hidden overflow-y-auto shadow-xl shadow-[#ffbe72] border-2 border-zinc-700 p-5">
-            {info[category + 'Credits'].cast.map((c, i) => (
-              <li
-                key={i}
-                className="hover:text-white p-5 rounded hover:bg-[#19191d] duration-300 cursor-pointer"
-              >
-                <Link to={`/${category}/details/${c.id}`}>
-                  <span>{c.name || c.title || c.original_title || c.original_name}</span>
-                  {c.character && <span className="block ml-5">Character: {c.character}</span>}
-                </Link>
-              </li>
+            <div className="my-6 h-px bg-white/10" />
+
+            <div className="flex flex-wrap gap-3 text-xl text-white">
+              {[
+                {
+                  title: 'Wikipedia Profile',
+                  href: `https://wikidata.org/wiki/${info.externalid.wikidata_id}`,
+                  icon: 'ri-earth-fill',
+                  show: info.externalid.wikidata_id,
+                },
+                {
+                  title: 'Facebook Profile',
+                  href: `https://facebook.com/${info.externalid.facebook_id}`,
+                  icon: 'ri-facebook-circle-fill',
+                  show: info.externalid.facebook_id,
+                },
+                {
+                  title: 'Instagram Profile',
+                  href: `https://instagram.com/${info.externalid.instagram_id}`,
+                  icon: 'ri-instagram-fill',
+                  show: info.externalid.instagram_id,
+                },
+                {
+                  title: 'X Profile',
+                  href: `https://x.com/${info.externalid.twitter_id}`,
+                  icon: 'ri-twitter-x-line',
+                  show: info.externalid.twitter_id,
+                },
+              ].filter((item) => item.show).map((item, index) => (
+                <a key={index} className="grid h-11 w-11 place-items-center rounded-full border border-white/10 bg-white/[0.06] duration-300 hover:border-[#F56009]/50 hover:text-[#F56009]" title={item.title} target="_blank" rel="noopener noreferrer" href={item.href}>
+                  <i className={item.icon}></i>
+                </a>
+              ))}
+            </div>
+
+            <h1 className="my-5 text-2xl font-bold text-white">Personal Info</h1>
+            {[
+              { label: 'Work', value: info.detail.known_for_department },
+              { label: 'Gender', value: info.detail.gender === 2 ? 'Male' : info.detail.gender === 1 ? 'Female' : 'No information' },
+              { label: 'Born & Place', value: [info.detail.birthday, info.detail.place_of_birth].filter(Boolean).join(', ') },
+              { label: 'Death-day', value: info.detail.deathday || 'Alive' },
+              { label: 'AKA', value: info.detail.also_known_as.join(', ') },
+            ].map((item, index) => (
+              <div key={index} className="mb-4 rounded-2xl border border-white/10 bg-white/[0.04] p-4">
+                <h1 className="text-sm font-bold uppercase tracking-[0.16em] text-[#F56009]">{item.label}</h1>
+                <p className="mt-2 leading-6 text-zinc-300">{item.value || 'No information'}</p>
+              </div>
             ))}
-          </div>
-        </div>
+          </aside>
+
+          <main className="w-full lg:w-[70%]">
+            <p className="mb-3 text-xs font-bold uppercase tracking-[0.28em] text-[#F56009]">Actor profile</p>
+            <h1 className="mb-5 text-4xl font-black text-white sm:text-6xl">{info.detail.name}</h1>
+
+            <h1 className="text-2xl font-bold text-white">Biography</h1>
+            <p className="mt-3 leading-7 text-zinc-300">{info.detail.biography || 'No biography available.'}</p>
+
+            <HorizontalCards data={info.combinedCredits.cast} />
+
+            <div className="mt-8 flex w-full flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+              <div>
+                <p className="text-xs font-bold uppercase tracking-[0.24em] text-[#F56009]">Credits</p>
+                <h1 className="mt-2 text-2xl font-bold text-white">Movies List</h1>
+              </div>
+              <Dropdown
+                title="Category"
+                options={['tv', 'movie']}
+                func={(e) => setcategory(e.target.value)}
+              />
+            </div>
+
+            <div className="mt-5 h-[50vh] w-full overflow-y-auto rounded-3xl border border-white/10 bg-white/[0.04] p-3 shadow-2xl shadow-black/20">
+              {info[category + 'Credits'].cast.map((c, i) => (
+                <div
+                  key={i}
+                  className="cursor-pointer rounded-2xl p-4 text-zinc-300 duration-300 hover:bg-white/10 hover:text-white"
+                >
+                  <Link to={`/${category}/details/${c.id}`}>
+                    <span className="font-bold">{c.name || c.title || c.original_title || c.original_name}</span>
+                    {c.character && <span className="mt-1 block text-sm text-zinc-500">Character: {c.character}</span>}
+                  </Link>
+                </div>
+              ))}
+            </div>
+          </main>
+        </section>
       </div>
     </div>
   ) : (

@@ -8,10 +8,10 @@ const Sidenav = () => {
   const toggleMenu = () => setIsOpen(!isOpen);
 
   return (
-    <div className="lg:w-[15%] w-full lg:block">
+    <aside className="w-full border-white/10 bg-[#0D0F14] lg:h-full lg:w-72 lg:border-r">
       {/* Mobile Menu Button */}
       <button
-        className="lg:hidden p-4 text-white"
+        className="p-4 text-white lg:hidden"
         onClick={toggleMenu}
         aria-label="Toggle Menu"
       >
@@ -22,15 +22,17 @@ const Sidenav = () => {
       <div
         className={`${
           isOpen ? "block" : "hidden"
-        } lg:block h-full border-r-2 border-zinc-400 p-10 bg-[#1F1E24]`}
+        } h-full bg-[#0D0F14] px-5 pb-6 pt-2 lg:block lg:p-6`}
       >
-        <h1 className="text-2xl text-white font-bold">
-          <i className="text-[#F56009] ri-tv-fill mr-2"></i>
-          <span className="text-2xl text-[#F56009]"> Movie Guider 2 </span>
+        <h1 className="flex items-center gap-3 text-xl font-bold text-white">
+          <span className="grid h-11 w-11 place-items-center rounded-2xl bg-[#F56009] text-white shadow-lg shadow-[#F56009]/25">
+            <i className="ri-tv-fill text-2xl"></i>
+          </span>
+          <span>Movie Guider 2</span>
         </h1>
 
-        <nav className="flex flex-col text-zinc-400 text-xl gap-3">
-          <h1 className="text-white font-semibold text-xl mt-10 mb-5">New Feeds</h1>
+        <nav className="mt-10 flex flex-col gap-2 text-base font-semibold text-zinc-400">
+          <h1 className="mb-3 px-4 text-xs font-bold uppercase tracking-[0.24em] text-zinc-500">New Feeds</h1>
 
           {[
             { path: "/trending", icon: "ri-fire-fill", label: "Trending" },
@@ -42,9 +44,9 @@ const Sidenav = () => {
             <Link
               key={i}
               to={item.path}
-              className="hover:bg-[#F56009] hover:text-white hover:font-bold duration-300 rounded-lg p-5"
+              className="group flex items-center rounded-2xl px-4 py-3 duration-300 hover:bg-white/10 hover:text-white"
             >
-              <i className={`text-[#F56009] ${item.icon} mr-2`}></i>
+              <i className={`mr-3 text-xl text-[#F56009] duration-300 group-hover:scale-110 ${item.icon}`}></i>
               {item.label}
             </Link>
           ))}
@@ -69,7 +71,7 @@ const Sidenav = () => {
           ))}
         </nav> */}
       </div>
-    </div>
+    </aside>
   );
 };
 
