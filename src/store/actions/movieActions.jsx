@@ -4,7 +4,7 @@ import {loadmovie} from "../reducers/movieSlice"
 // exporting {removeMovie} reducer from this place to stop someone reach to reducers 
 export { removemovie} from "../reducers/movieSlice"
 
-export const asyncloadmovie = (id) => async (dispatch, getState) => {
+export const asyncloadmovie = (id) => async (dispatch) => {
     try {
         const detail = await axios.get(`/movie/${id}`);
         const translations = await axios.get(`/movie/${id}/translations`);
@@ -25,8 +25,6 @@ export const asyncloadmovie = (id) => async (dispatch, getState) => {
         }
 
         dispatch(loadmovie(allDetails))
-
-        console.log(allDetails)
 
     } catch (error) {
         console.log("Error: ", error)

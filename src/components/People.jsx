@@ -5,40 +5,54 @@ import Loading from './partials/Loading';
 import Topnav from './partials/Topnav';
 import InfiniteScroll from 'react-infinite-scroll-component';
 import Cards from './partials/Cards';
+import StateMessage from './partials/StateMessage';
 
 const People = () => {
   const navigate = useNavigate();
   const [person, setperson] = useState([]);
   const [page, setpage] = useState(1);
   const [hasMore, sethasMore] = useState(true);
+  const [loading, setloading] = useState(true);
+  const [error, seterror] = useState('');
 
   document.title = 'Movie Guider 2 - Actors';
 
-  const GetPerson = async () => {
+  const GetPerson = async (pageToLoad = page, replace = false) => {
     try {
-      const { data } = await axios.get(`/person/popular?page=${page}`);
+      seterror('');
+      const { data } = await axios.get(`/person/popular?page=${pageToLoad}`);
       if (data.results.length > 0) {
-        setperson((prevState) => [...prevState, ...data.results]);
-        setpage(page + 1);
+        setperson((prevState) => replace ? data.results : [...prevState, ...data.results]);
+        setpage(pageToLoad + 1);
+        sethasMore(true);
       } else {
         sethasMore(false);
       }
     } catch (error) {
       console.log('Error: ', error);
+      seterror('Unable to load actors right now.');
+    } finally {
+      setloading(false);
     }
   };
 
   const refereshHandler = () => {
+    setloading(true);
     setpage(1);
     setperson([]);
-    GetPerson();
+    sethasMore(true);
+    GetPerson(1, true);
   };
 
   useEffect(() => {
     refereshHandler();
   }, []);
 
-  return person.length > 0 ? (
+  if (loading) return <Loading variant="grid" />;
+  if (error) return <StateMessage title="Something went wrong" message={error} actionLabel="Try again" onAction={refereshHandler} />;
+  if (person.length === 0) return <StateMessage title="No actors found" message="Try again in a moment." />;
+
+  return (
     <div className="min-h-screen w-screen bg-[#0D0F14] text-white">
       <div className="pointer-events-none fixed inset-0 bg-[radial-gradient(circle_at_top_right,rgba(245,96,9,0.14),transparent_35%)]" />
       <div className="relative flex min-h-screen flex-col">
@@ -64,7 +78,7 @@ const People = () => {
       <div id="scrollableDiv" className="flex-1 overflow-y-auto">
         <InfiniteScroll
           dataLength={person.length}
-          next={GetPerson}
+          next={() => GetPerson(page)}
           hasMore={hasMore}
           scrollableTarget="scrollableDiv"
         >
@@ -73,8 +87,6 @@ const People = () => {
       </div>
       </div>
     </div>
-  ) : (
-    <Loading />
   );
 };
 

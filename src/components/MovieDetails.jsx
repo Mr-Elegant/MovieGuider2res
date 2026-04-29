@@ -4,6 +4,8 @@ import { Link, Outlet, useLocation, useNavigate, useParams } from 'react-router-
 import { asyncloadmovie, removemovie } from '../store/actions/movieActions';
 import Loading from './partials/Loading';
 import HorizontalCards from './partials/HorizontalCards';
+import useWatchlist from '../hooks/useWatchlist';
+import { makeWatchItem } from '../utils/watchlist';
 
 const MovieDetails = () => {
   const { pathname } = useLocation();
@@ -12,6 +14,7 @@ const MovieDetails = () => {
 
   const { info } = useSelector((state) => state.movie);
   const dispatch = useDispatch();
+  const { isSaved, toggle } = useWatchlist();
 
   useEffect(() => {
     dispatch(asyncloadmovie(id));
@@ -19,6 +22,7 @@ const MovieDetails = () => {
   }, [id, dispatch]);
 
   const year = info?.detail?.release_date?.split('-')[0];
+  const watchItem = info ? makeWatchItem(info.detail, 'movie') : null;
 
   return info ? (
     <div
@@ -85,6 +89,10 @@ const MovieDetails = () => {
           <Link className="inline-flex items-center rounded-full bg-[#F56009] px-6 py-3 font-bold shadow-lg shadow-[#F56009]/25 duration-300 hover:bg-[#ff751f]" to={`${pathname}/trailer`}>
             <i className="ri-play-fill text-xl mr-2"></i>Watch Trailer
           </Link>
+          <button onClick={() => toggle(watchItem)} className="ml-3 inline-flex items-center rounded-full border border-white/15 bg-white/10 px-6 py-3 font-bold text-white backdrop-blur duration-300 hover:bg-white/15">
+            <i className={`${isSaved(watchItem) ? 'ri-bookmark-fill' : 'ri-bookmark-line'} mr-2 text-xl`}></i>
+            {isSaved(watchItem) ? 'Saved' : 'Watchlist'}
+          </button>
         </div>
       </section>
 
@@ -111,6 +119,14 @@ const MovieDetails = () => {
       <div className="mt-10 mb-5 h-px bg-white/10" />
       <h1 className="text-2xl font-bold text-white sm:text-3xl">Movie Recommendations & Similar Movies</h1>
       <HorizontalCards data={info.recommendations.length > 0 ? info.recommendations : info.similar} />
+      <div className="fixed bottom-4 left-4 right-4 z-50 flex gap-3 rounded-full border border-white/10 bg-[#141519]/90 p-2 shadow-2xl shadow-black/40 backdrop-blur lg:hidden">
+        <Link className="flex flex-1 items-center justify-center rounded-full bg-[#F56009] px-4 py-3 font-bold text-white" to={`${pathname}/trailer`}>
+          <i className="ri-play-fill mr-2 text-xl"></i>Trailer
+        </Link>
+        <button onClick={() => toggle(watchItem)} className="grid h-12 w-12 place-items-center rounded-full bg-white/10 text-xl text-white">
+          <i className={isSaved(watchItem) ? 'ri-bookmark-fill' : 'ri-bookmark-line'}></i>
+        </button>
+      </div>
       <Outlet />
     </div>
   ) : (

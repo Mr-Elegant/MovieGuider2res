@@ -4,7 +4,7 @@ import {loadperson} from "../reducers/personSlice"
 // exporting {removeperson} reducer from this place to stop someone reach to reducers 
 export { removeperson} from "../reducers/personSlice"
 
-export const asyncloadperson = (id) => async (dispatch, getState) => {
+export const asyncloadperson = (id) => async (dispatch) => {
     try {
         const detail = await axios.get(`/person/${id}`);
         const externalid = await axios.get(`/person/${id}/external_ids`);
@@ -22,8 +22,6 @@ export const asyncloadperson = (id) => async (dispatch, getState) => {
         }
 
         dispatch(loadperson(allDetails))
-
-        console.log(allDetails)
 
     } catch (error) {
         console.log("Error: ", error)

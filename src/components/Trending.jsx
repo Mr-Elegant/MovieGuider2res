@@ -6,6 +6,7 @@ import axios from '../utils/axios';
 import Cards from './partials/Cards';
 import Loading from './partials/Loading';
 import InfiniteScroll from 'react-infinite-scroll-component';
+import StateMessage from './partials/StateMessage';
 
 const Trending = () => {
   const navigate = useNavigate();
@@ -15,34 +16,47 @@ const Trending = () => {
   const [trending, settrending] = useState([]);
   const [page, setpage] = useState(1);
   const [hasMore, sethasMore] = useState(true);
+  const [loading, setloading] = useState(true);
+  const [error, seterror] = useState('');
 
   document.title = 'Movie Guider 2 - Trending: ' + category.toLocaleUpperCase();
 
-  const GetTrending = async () => {
+  const GetTrending = async (pageToLoad = page, replace = false) => {
     try {
-      const { data } = await axios.get(`/trending/${category}/${duration}?page=${page}`);
+      seterror('');
+      const { data } = await axios.get(`/trending/${category}/${duration}?page=${pageToLoad}`);
       if (data.results.length > 0) {
-        settrending((prevState) => [...prevState, ...data.results]);
-        setpage(page + 1);
+        settrending((prevState) => replace ? data.results : [...prevState, ...data.results]);
+        setpage(pageToLoad + 1);
+        sethasMore(true);
       } else {
         sethasMore(false);
       }
     } catch (error) {
       console.log('Error: ', error);
+      seterror('Unable to load trending titles right now.');
+    } finally {
+      setloading(false);
     }
   };
 
   const refereshHandler = () => {
+    setloading(true);
     setpage(1);
     settrending([]);
-    GetTrending();
+    sethasMore(true);
+    GetTrending(1, true);
   };
 
   useEffect(() => {
     refereshHandler();
   }, [category, duration]);
 
-  return trending.length > 0 ? (
+  if (loading) return <Loading variant="grid" />;
+  if (error) return <StateMessage title="Something went wrong" message={error} actionLabel="Try again" onAction={refereshHandler} />;
+  if (trending.length === 0) return <StateMessage title="No results found" message="Try another category or duration." />;
+
+  return (
     <div className="min-h-screen w-screen bg-[#0D0F14] text-white">
       <div className="pointer-events-none fixed inset-0 bg-[radial-gradient(circle_at_top_right,rgba(245,96,9,0.14),transparent_35%)]" />
       <div className="relative flex min-h-screen flex-col">
@@ -72,7 +86,7 @@ const Trending = () => {
       <div id="scrollableDiv" className="flex-1 overflow-y-auto">
         <InfiniteScroll
           dataLength={trending.length}
-          next={GetTrending}
+          next={() => GetTrending(page)}
           hasMore={hasMore}
           scrollableTarget="scrollableDiv"
         >
@@ -81,8 +95,6 @@ const Trending = () => {
       </div>
       </div>
     </div>
-  ) : (
-    <Loading />
   );
 };
 

@@ -1,5 +1,5 @@
 
-import { Route, Routes } from 'react-router-dom'
+import { Route, Routes, useLocation } from 'react-router-dom'
 import Home from './components/Home.jsx'
 import Trending from './components/Trending.jsx'
 import Popular from './components/Popular.jsx'
@@ -11,12 +11,15 @@ import PersonDetails from './components/PersonDetails.jsx'
 import TvDetails from './components/TvDetails.jsx'
 import Trailer from './components/partials/Trailer.jsx'
 import NotFound404 from './components/partials/NotFound404.jsx'
+import Watchlist from './components/Watchlist.jsx'
 
 const App = () => {
-  return (
-    <div className='bg-[#1F1E24] font-["satoshi"]  h-full w-full flex '>
+  const location = useLocation();
 
-      <Routes>
+  return (
+    <div key={location.pathname} className='min-h-screen w-full bg-[#0D0F14] font-["satoshi"] page-fade'>
+
+      <Routes location={location}>
         <Route path='/' element={<Home />} />
         <Route path='/trending' element={<Trending />} />
         <Route path='/popular' element={<Popular />} />
@@ -30,6 +33,7 @@ const App = () => {
         </Route>
         <Route path='/person' element={<People />} />
         <Route path='/person/details/:id' element={<PersonDetails  />} />
+        <Route path='/watchlist' element={<Watchlist />} />
         <Route path='*'  element={<NotFound404 />} />
        
         

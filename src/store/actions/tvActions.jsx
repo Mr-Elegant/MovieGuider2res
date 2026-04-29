@@ -4,7 +4,7 @@ import {loadtv} from "../reducers/tvSlice"
 // exporting {removetv} reducer from this place to stop someone reach to reducers 
 export { removetv} from "../reducers/tvSlice"
 
-export const asyncloadtv = (id) => async (dispatch, getState) => {
+export const asyncloadtv = (id) => async (dispatch) => {
     try {
         const detail = await axios.get(`/tv/${id}`);
         const translations = await axios.get(`/tv/${id}/translations`);
@@ -25,8 +25,6 @@ export const asyncloadtv = (id) => async (dispatch, getState) => {
         }
 
         dispatch(loadtv(allDetails))
-
-        console.log(allDetails)
 
     } catch (error) {
         console.log("Error: ", error)

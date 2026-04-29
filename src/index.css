@@ -91,3 +91,18 @@ select:hover{
         transform: translateX(100%);
     }
 }
+
+.page-fade {
+    animation: pageFade .22s ease-out;
+}
+
+@keyframes pageFade {
+    from {
+        opacity: .72;
+        transform: translateY(6px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}

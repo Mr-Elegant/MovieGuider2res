@@ -1,9 +1,10 @@
 import { useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
 import { RiMenu3Line, RiCloseLine } from "react-icons/ri";
 
 const Sidenav = () => {
   const [isOpen, setIsOpen] = useState(false);
+  const { pathname } = useLocation();
 
   const toggleMenu = () => setIsOpen(!isOpen);
 
@@ -40,13 +41,18 @@ const Sidenav = () => {
             { path: "/movie", icon: "ri-movie-2-fill", label: "Movies" },
             { path: "/tv", icon: "ri-tv-fill", label: "TV Shows" },
             { path: "/person", icon: "ri-group-fill", label: "Actors" },
+            { path: "/watchlist", icon: "ri-bookmark-fill", label: "Watchlist" },
           ].map((item, i) => (
             <Link
               key={i}
               to={item.path}
-              className="group flex items-center rounded-2xl px-4 py-3 duration-300 hover:bg-white/10 hover:text-white"
+              className={`group flex items-center rounded-2xl px-4 py-3 duration-300 hover:bg-white/10 hover:text-white ${
+                pathname === item.path ? "bg-[#F56009] text-white shadow-lg shadow-[#F56009]/20" : ""
+              }`}
             >
-              <i className={`mr-3 text-xl text-[#F56009] duration-300 group-hover:scale-110 ${item.icon}`}></i>
+              <i className={`mr-3 text-xl duration-300 group-hover:scale-110 ${
+                pathname === item.path ? "text-white" : "text-[#F56009]"
+              } ${item.icon}`}></i>
               {item.label}
             </Link>
           ))}

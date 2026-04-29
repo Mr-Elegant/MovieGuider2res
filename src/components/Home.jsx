@@ -6,13 +6,16 @@ import Header from "./partials/Header";
 import HorizontalCards from "./partials/HorizontalCards";
 import Dropdown from "./partials/Dropdown";
 import Loading from "./partials/Loading";
+import StateMessage from "./partials/StateMessage";
 
 const Home = () => {
   document.title = "Movie Guider 2 | HomePage";
 
-  const [wallpaper, setwallpaper] = useState([]);
+  const [wallpaper, setwallpaper] = useState(null);
   const [trending, settrending] = useState([]);
   const [category, setcategory] = useState("all");
+  const [loading, setloading] = useState(true);
+  const [error, seterror] = useState("");
 
   const GetHeaderWallpaper = async () => {
     try {
@@ -21,6 +24,7 @@ const Home = () => {
       setwallpaper(randomdata);
     } catch (error) {
       console.log("Error: ", error);
+      seterror("Unable to load the featured title.");
     }
   };
 
@@ -30,15 +34,24 @@ const Home = () => {
       settrending(data.results);
     } catch (error) {
       console.log("Error: ", error);
+      seterror("Unable to load trending titles.");
+    } finally {
+      setloading(false);
     }
   };
 
   useEffect(() => {
+    setloading(true);
+    seterror("");
     GetHeaderWallpaper();
     GetTrending();
   }, [category]);
 
-  return wallpaper && trending ? (
+  if (loading) return <Loading />;
+  if (error) return <StateMessage title="Something went wrong" message={error} actionLabel="Try again" onAction={() => window.location.reload()} />;
+  if (!wallpaper || trending.length === 0) return <StateMessage title="Nothing to show" message="Try refreshing the page." />;
+
+  return (
     <div className="flex h-screen w-screen flex-col overflow-hidden bg-[#0D0F14] text-white lg:flex-row">
       <Sidenav />
       <main className="relative h-full w-full flex-1 overflow-y-auto overflow-x-hidden">
@@ -66,8 +79,6 @@ const Home = () => {
         </div>
       </main>
     </div>
-  ) : (
-    <Loading />
   );
 };
 
